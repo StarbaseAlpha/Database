@@ -1,0 +1,35 @@
+{
+  "name": "@starbase/database",
+  "version": "0.0.1",
+  "description": "Starbase Database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mike Fuller",
+  "license": "MIT",
+  "dependencies": {
+    "encoding-down": "^5.0.4",
+    "leveldown": "^4.0.1",
+    "levelup": "^3.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/starbasealpha/database.git"
+  },
+  "keywords": [
+    "IndexedDB",
+    "LevelDB",
+    "database",
+    "web",
+    "node.js",
+    "datastore",
+    "memstore",
+    "memorystore",
+    "starbase"
+  ],
+  "bugs": {
+    "url": "https://github.com/starbasealpha/database/issues"
+  },
+  "homepage": "https://github.com/starbasealpha/database#readme"
+}
