@@ -152,7 +152,7 @@ db.list({
 ### <a name="exportDB"></a>db.exportDB()
 #### Export the database as an array of objects with key-value pairs
 ```javascript
-db.deleteDB().then(result => {
+db.exportDB().then(result => {
 
   // an array of objects containing the key value pairs of all data in the database.
   console.log(result);
@@ -198,6 +198,18 @@ db.onEvent(e => {
 });
 ```
 
+
+### <a name="open"></a>db.open()
+#### Open a previously closed database (node.js only)
+```javascript
+db.open().then(() => {
+
+  // The database is open.
+
+});
+```
+
+
 ### <a name="close"></a>db.close()
 #### Close the database (node.js only)
 ```javascript
@@ -209,16 +221,6 @@ db.close().then(result => {
 });
 ```
 
-### <a name="open"></a>db.open()
-#### Open a previously closed database (node.js only)
-```javascript
-db.open().then(result => {
-
-  // The database was closed.
-  console.log(result);
-
-});
-```
 
 ## More Information
 
