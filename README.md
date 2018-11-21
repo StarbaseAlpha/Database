@@ -183,7 +183,7 @@ db.importDB(exportedDB).then(result => {
 
 #### Import from an Export
 ```javascript
-mem.exportDB.then(db.importDB).then(console.log);
+mem.exportDB().then(db.importDB).then(console.log);
 ```
 
 ### db.close()
