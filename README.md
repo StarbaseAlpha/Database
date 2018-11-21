@@ -67,18 +67,18 @@ var db = memstore();
 
 All methods return a promise, except when they do not. All methods are available in all data stores, except when they are not.
 
-- db.put()
-- db.get()
-- db.del()
-- db.list()
-- db.exportDB()
-- db.importDB()
-- db.deleteDB()
-- db.onEvent()
-- db.open()
-- db.close()
+- [db.put()](#put)
+- [db.get()](#get)
+- [db.del()](#del)
+- [db.list()](#list)
+- [db.exportDB()](#exportDB)
+- [db.importDB()](#importDB)
+- [db.deleteDB()](#deleteDB)
+- [db.onEvent()](#onEvent)
+- [db.open()](#open)
+- [db.close()](#close)
 
-### db.put(key, value)
+### <a name="put"></a>db.put(key, value)
 #### Put the string 'hello world' into the key 'hello'
 ```javascript
 db.put('hello','Hello world').then(result =>{
@@ -89,7 +89,7 @@ db.put('hello','Hello world').then(result =>{
 });
 ```
 
-### db.get(key)
+### <a name="get"></a>db.get(key)
 #### Get the data stored in the key 'hello'
 ```javascript
 db.get('hello').then(result => {
@@ -100,7 +100,7 @@ db.get('hello').then(result => {
 });
 ```
 
-### db.del(key)
+### <a name="del"></a>db.del(key)
 #### Delete the data stored in the key 'hello'
 ```javascript
 db.del('hello').then(result => {
@@ -111,7 +111,7 @@ db.del('hello').then(result => {
 });
 ```
 
-### db.list(query)
+### <a name="list"></a>db.list(query)
 #### List the keys stored in the database
 ```javascript
 db.list().then(result => {
@@ -149,7 +149,7 @@ db.list({
 });
 ```
 
-### db.exportDB()
+### <a name="exportDB"></a>db.exportDB()
 #### Export the database as an array of objects with key-value pairs
 ```javascript
 db.deleteDB().then(result => {
@@ -160,7 +160,7 @@ db.deleteDB().then(result => {
 });
 ```
 
-### db.importDB(dbArray)
+### <a name="importDB"></a>db.importDB(dbArray)
 #### Import a previously exported database array
 ```javascript
 db.importDB(exportedDB).then(result => {
@@ -176,7 +176,7 @@ db.importDB(exportedDB).then(result => {
 mem.exportDB().then(db.importDB).then(console.log);
 ```
 
-### db.deleteDB()
+### <a name="deleteDB"></a>db.deleteDB()
 #### Delete the database
 ```javascript
 db.deleteDB().then(result => {
@@ -187,7 +187,7 @@ db.deleteDB().then(result => {
 });
 ```
 
-### db.onEvent(handler)
+### <a name="onEvent"></a>db.onEvent(handler)
 #### listen for and react to write and delete events
 ```javascript
 db.onEvent(e => {
@@ -198,7 +198,7 @@ db.onEvent(e => {
 });
 ```
 
-### db.close()
+### <a name="close"></a>db.close()
 #### Close the database (node.js only)
 ```javascript
 db.close().then(result => {
@@ -209,7 +209,7 @@ db.close().then(result => {
 });
 ```
 
-### db.open()
+### <a name="open"></a>db.open()
 #### Open a previously closed database (node.js only)
 ```javascript
 db.open().then(result => {
