@@ -50,7 +50,7 @@ Data will persist until the app stops or is terminated
 
 ```javascript
 var memstore = require('@starbase/database/memstore');
-var db = memstore('/path/to/testdb');
+var db = memstore();
 ```
 
 ### Create a database in Memory in the browser using memstore.min.js:
@@ -58,7 +58,7 @@ Data will persist until the browser refreshes
 
 ```javascript
 var memstore = require('@starbase/database/memstore');
-var db = memstore('/path/to/testdb');
+var db = memstore();
 ```
 
 
