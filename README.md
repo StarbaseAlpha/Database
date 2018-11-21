@@ -1,4 +1,5 @@
 # Starbase Database
+
 Portable Data for Node.js and The Web
 
 Starbase Database is a key-value data store for storing, accessing, and transferring data in modern, progressive web applications. Starbase Database is powerful, portable, lightweight and fast. With an easy to use API, the database removes the complications involved with underlining storage mechanisms.
@@ -64,7 +65,7 @@ var db = memstore('/path/to/testdb');
 
 ## API Methods
 
-All methods return a promise and are available in all data stores, except when they are not.
+All methods return a promise, except when they do not. All methods are available in all data stores, except when they are not.
 
 - db.put()
 - db.get()
@@ -73,9 +74,9 @@ All methods return a promise and are available in all data stores, except when t
 - db.exportDB()
 - db.importDB()
 - db.deleteDB()
+- db.onEvent()
 - db.open()
 - db.close()
-
 
 ### db.put(key, value)
 #### Put the string 'hello world' into the key 'hello'
@@ -148,17 +149,6 @@ db.list({
 });
 ```
 
-### db.deleteDB()
-#### Delete the database
-```javascript
-db.deleteDB().then(result => {
-
-  // an object with the deleteDB event information is resolved
-  console.log(result);
-
-});
-```
-
 ### db.exportDB()
 #### Export the database as an array of objects with key-value pairs
 ```javascript
@@ -184,6 +174,28 @@ db.importDB(exportedDB).then(result => {
 #### Import from an Export
 ```javascript
 mem.exportDB().then(db.importDB).then(console.log);
+```
+
+### db.deleteDB()
+#### Delete the database
+```javascript
+db.deleteDB().then(result => {
+
+  // an object with the deleteDB event information is resolved
+  console.log(result);
+
+});
+```
+
+### db.onEvent(handler)
+#### listen for and react to write and delete events
+```javascript
+db.onEvent(e => {
+
+  // an object with the event information that occured
+  console.log(e);
+
+});
 ```
 
 ### db.close()
