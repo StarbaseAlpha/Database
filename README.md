@@ -1,5 +1,4 @@
 # Starbase Database
-
 Portable Data for Node.js and The Web
 
 Starbase Database is a key-value data store for storing, accessing, and transferring data in modern, progressive web applications. Starbase Database is powerful, portable, lightweight and fast. With an easy to use API, the database removes the complications involved with underlining storage mechanisms.
