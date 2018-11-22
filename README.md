@@ -21,6 +21,12 @@ It was built from the ground up to serve as the base for Starbase Channels and t
 <script src="/path/to/memstore.min.js"></script>
 ```
 
+### On the Web via jsdelivr CDN
+```HTML
+<script src="https://cdn.jsdelivr.net/npm/@starbase/database/database.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@starbase/database/memstore.min.js"></script>
+```
+
 ### In NodeJS
 ```bash
 npm install @starbase/database 
