@@ -1,4 +1,6 @@
-# Starbase Database
+# Database
+Starbase Database
+
 Portable Data for Node.js and The Web
 
 Starbase Database is a key-value data store for storing, accessing, and transferring data in modern, progressive web applications. Starbase Database is powerful, portable, lightweight and fast. With an easy to use API, the database removes the complications involved with underlining storage mechanisms.
@@ -194,6 +196,7 @@ db.list({
 });
 ```
 
+#### Response
 ```JSON
 [
     {
@@ -332,16 +335,16 @@ db.close().then(result => {
 This database module exists retroactively in space-time to provides the data storage and maintenance operations for Starbase Channels. While it is handy as a key-value data store, it is even more useful when paired with the Starbase Channels and Starbase Rules Engine modules. Long ago, the three modules were one. Now they are not.
 
 ### database.min.js (web database)
-The Web Database Storage Engine (Database) is built for the browser and is the original model for the other storage engines. Data is stored within an IndexedDB store that shares the name of the IndexedDB database it lives within. Data persists between browser sessions. The API for accessing the database is simple compared to the standard IndexedDB API. The desire for an easy way to store and access IndexedDB was the motivation behind this library.
+The Web Database Storage Engine is built for the browser and is the original model for the other storage engines. Data is stored within an IndexedDB store that shares the name of the IndexedDB database it lives within. Data persists between browser sessions. The API for accessing the database is simple compared to the standard IndexedDB API. The desire for an easy way to store and access IndexedDB was the motivation behind this library.
 
-The database is suitable for storing relatively large amounts of data in the browser that needs to persist between browser sessions. The webstore can be useful for storing fetch results from an external API, and then loading them again on a browser refresh, rather than making a network request back to the external API for the same data.
+The database is suitable for storing relatively large amounts of data in the browser that needs to persist between browser sessions. The web database can be useful for storing JSON fetch results from an external API, and then loading them again on a browser refresh, rather than making a network request back to the external API for the same data.
 
 The database does not use, leverage, or even acknowledge IndexedDB indexes. It treats the database as a key-value store. Other limitations of the database can vary depending on the web browser. In general, there is a maximum amount of space that the web browser will allow for each IndexedDB database. In some cases, exceeding that amount may cause the browser to prompt the user to raise the limit, or may even delete old data to make room for new data. If the user clears their browser history and cache, this can also remove the data. Treat the web database as a "mostly" persistent data store.
 
 ### @starbase/database (node.js database)
-The NodeJS Database Storage Engine uses LevelDB as the underlining storage mechanism and is suitable for permanent persistent storage on a Node.js server. This data store was built as a companion to the client-side web database to allow for the server and client to syncronize data between each other and share the same overarching database structure.
+The node.js Database Storage Engine uses LevelDB as the underlining storage mechanism and is suitable for permanent persistent storage on a Node.js server. This data store was built as a companion to the client-side web database to allow for the server and client to syncronize data between each other and share the same overarching database structure.
 
-The database provides a key-value data store in Node.js applications that can be used for persistent storage in express APIs. Like the memstore and webstore, the dbstore shares the same CRUD and management operations, as well as database OPEN and CLOSE methods. This can be useful on the server side if an application needs access to multiple databases that may need to be opened, used, and then closed when no longer needed.
+The database provides a key-value data store in Node.js applications that can be used for persistent storage in express APIs. Like the memstore and web database, the node.js Database shares the same CRUD and management operations, as well as database OPEN and CLOSE methods. This can be useful on the server side if an application needs access to multiple databases that may need to be opened, used, and then closed when no longer needed.
 
 The database shares the limitations of LevelDB. Data can be written very fast, and even faster in batch operations. Limited range queries can also be very fast. It is said that LevelDB is not as efficient at requesting random individual keys. While this limitation exist, in my personal experience I have not found it to be an issue. In some cases, there is a possibility of data loss should uncommitted writes be lost in the event of low memory or a sudden application termination.
 
