@@ -255,6 +255,7 @@ db.importDB(exportedDB).then(result => {
 });
 ```
 
+#### Response
 ```JSON
 {
     "db": "testdb",
