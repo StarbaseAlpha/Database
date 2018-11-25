@@ -94,6 +94,16 @@ db.put('hello','Hello world').then(result =>{
 });
 ```
 
+#### Response
+```JSON
+{
+    "db": "testdb",
+    "event": "write",
+    "key": "hello",
+    "timestamp": 1543116554231
+}
+```
+
 ### <a name="get"></a>db.get(key)
 #### Get the data stored in the key 'hello'
 ```javascript
@@ -103,6 +113,14 @@ db.get('hello').then(result => {
   console.log(result);
 
 });
+```
+
+#### Response
+```JSON
+{
+    "key": "hello",
+    "value": "Hello world"
+}
 ```
 
 ### <a name="del"></a>db.del(key)
@@ -116,6 +134,18 @@ db.del('hello').then(result => {
 });
 ```
 
+#### Response
+```JSON
+{
+    "db": "testdb",
+    "event": "delete",
+    "keys": [
+        "hello"
+    ],
+    "timestamp": 1543116684386
+}
+```
+
 ### <a name="list"></a>db.list(query)
 #### List the keys stored in the database
 ```javascript
@@ -125,6 +155,16 @@ db.list().then(result => {
   console.log(result);
 
 });
+```
+
+#### Response
+```JSON
+[
+    "abba",
+    "cool",
+    "hello",
+    "zztop"
+]
 ```
 
 #### List keys with values, ranges, and limits
@@ -154,6 +194,19 @@ db.list({
 });
 ```
 
+```JSON
+[
+    {
+        "key": "hello",
+        "value": "Hello world"
+    },
+    {
+        "key": "cool",
+        "value": "awesome"
+    }
+]
+```
+
 ### <a name="exportDB"></a>db.exportDB()
 #### Export the database as an array of objects with key-value pairs
 ```javascript
@@ -165,6 +218,29 @@ db.exportDB().then(result => {
 });
 ```
 
+#### Response
+```JSON
+[
+    {
+        "key": "abba",
+        "value": "A band that starts with a"
+    },
+    {
+        "key": "cool",
+        "value": "awesome"
+    },
+    {
+        "key": "hello",
+        "value": "Hello world"
+    },
+    {
+        "key": "zztop",
+        "value": "A band that starts with zz"
+    }
+]
+```
+
+
 ### <a name="importDB"></a>db.importDB(dbArray)
 #### Import a previously exported database array
 ```javascript
@@ -174,6 +250,20 @@ db.importDB(exportedDB).then(result => {
   console.log(result);
   
 });
+```
+
+```JSON
+{
+    "db": "testdb",
+    "event": "importDB",
+    "keys": [
+        "abba",
+        "cool",
+        "hello",
+        "zztop"
+    ],
+    "timestamp": 1543116930439
+}
 ```
 
 #### Import from an Export
@@ -190,6 +280,15 @@ db.deleteDB().then(result => {
   console.log(result);
 
 });
+```
+
+#### Response
+```JSON
+{
+    "db": "testdb",
+    "event": "deleteDB",
+    "timestamp": 1543117061189
+}
 ```
 
 ### <a name="onEvent"></a>db.onEvent(handler)
