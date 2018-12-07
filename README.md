@@ -64,7 +64,6 @@ var db = memstore();
 Data will persist until the browser refreshes
 
 ```javascript
-var memstore = require('@starbase/database/memstore');
 var db = memstore();
 ```
 
