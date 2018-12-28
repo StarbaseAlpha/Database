@@ -2,7 +2,7 @@
 
 const DBService = require('./index');
 
-const service = DBService('./',{
+const service = DBService({
   "managerInterval":1000
 });
 

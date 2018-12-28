@@ -3,7 +3,7 @@
 const path = require('path');
 const Database = require(__dirname + path.sep + '..' + path.sep + 'node' + path.sep + 'database');
 
-function DBService(rootPath, options = {}) {
+function DBService(options = {}) {
 
   let dbs = {};
 
@@ -49,14 +49,14 @@ function DBService(rootPath, options = {}) {
     clearInterval(runManager);
   };
 
-  service.close = async (dbName) => {
-    if (dbs[dbName]) {
-      dbs[dbName].close().then(closed => {
-        if (dbs[dbName].onClose && typeof dbs[dbName].onClose === 'function') {
-          dbs[dbName].onClose(dbName);
+  service.close = async (dbPath) => {
+    if (dbs[dbPath]) {
+      dbs[dbPath].close().then(closed => {
+        if (dbs[dbPath].onClose && typeof dbs[dbPath].onClose === 'function') {
+          dbs[dbPath].onClose(dbPath);
         }
-        delete dbs[dbName];
-        //console.log(dbName + ' closed');
+        delete dbs[dbPath];
+        //console.log(dbPath + ' closed');
         return true;
       });
     } else {
@@ -66,13 +66,13 @@ function DBService(rootPath, options = {}) {
 
   service.closeAll = closeAll;
 
-  service.getDB = (dbName,options = {}) => {
-    if (dbs[dbName]) {
-      dbs[dbName].last = Date.now() + managerInterval;
-        //console.log(dbName + " used");
-      return dbs[dbName].db;
+  service.getDB = (dbPath,options = {}) => {
+    if (dbs[dbPath]) {
+      dbs[dbPath].last = Date.now() + managerInterval;
+        //console.log(dbPath + " used");
+      return dbs[dbPath].db;
     } else {
-      let db = Database(rootPath.replace(/\/$/,'') + '/' + dbName);
+      let db = Database(dbPath);
       if (options.onEvent) {
         db.onEvent(options.onEvent);
       }
@@ -84,9 +84,9 @@ function DBService(rootPath, options = {}) {
       if (options.onClose) {
         onClose = options.onClose;
       }
-      dbs[dbName] = {"db":db,"name":dbName, "keepalive":keepalive, "onClose":onClose, "last":Date.now() + managerInterval};
-      //console.log(dbName + " opened");
-      return dbs[dbName].db;
+      dbs[dbPath] = {"db":db,"name":dbPath, "keepalive":keepalive, "onClose":onClose, "last":Date.now() + managerInterval};
+      //console.log(dbPath + " opened");
+      return dbs[dbPath].db;
     }
   };
 
