@@ -25,7 +25,7 @@ It was built from the ground up to serve as the base for Starbase Channels and t
 ### On the Web via jsdelivr CDN
 ```HTML
 <script src="https://cdn.jsdelivr.net/npm/@starbase/database/database.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@starbase/database/memstore.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@starbase/memstore/memstore.min.js"></script>
 ```
 
 ### In NodeJS
@@ -56,15 +56,15 @@ var db = Database('/path/to/testdb');
 Data will persist until the app stops or is terminated
 
 ```javascript
-var memstore = require('@starbase/database/memstore');
-var db = memstore();
+var Memstore = require('@starbase/memstore');
+var db = Memstore();
 ```
 
 ### Create a database in Memory in the browser using memstore.min.js:
 Data will persist until the browser refreshes
 
 ```javascript
-var db = memstore();
+var db = Memstore();
 ```
 
 
