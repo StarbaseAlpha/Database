@@ -1,8 +1,9 @@
 {
   "name": "@starbase/database",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Starbase Database",
   "main": "index.js",
+  "browser": "database.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
