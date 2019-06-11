@@ -1,0 +1,10 @@
+<pre></pre>
+<script src="./database.js"></script>
+<script src="./test.js"></script>
+<script>
+  Test().then(result => {
+    document.querySelector('pre').innerHTML = JSON.stringify(result, null, 4);
+  }).catch(err => {
+    document.querySelector('pre').innerHTML = JSON.stringify(err, null, 4);
+  });
+</script>
