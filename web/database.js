@@ -75,10 +75,7 @@ function Database(dbName) {
   const put = (key, value) => {
     return new Promise(async (resolve, reject) => {
       let store = await txStore('readwrite', reject);
-      let req = store.put({
-        "key": key,
-        "value": value
-      });
+      let req = store.put({"key":key, "value":value});
       req.onsuccess = (event) => {
         let e = {
           "event": "write",
@@ -110,10 +107,27 @@ function Database(dbName) {
     });
   };
 
-  const del = (key) => {
+  const del = (keys=[]) => {
     return new Promise(async (resolve, reject) => {
       let store = await txStore('readwrite', reject);
-      let req = store.delete(key);
+
+      let keyPaths = [];
+      if (!keys) {
+        return reject({"code":400,"message":"A key or an array of keys is required."});
+      }
+      if (typeof keys === 'string') {
+        keyPaths = [keys];
+      } else {
+        keyPaths = keys;
+      }
+      let ops = [];
+      keyPaths.forEach(path=>{
+        ops.push({"type":"del","key":path});
+      });
+
+
+//      let req = store.delete(key);
+/*
       req.onsuccess = (event) => {
         let e = {
           "event": "delete",
@@ -125,6 +139,23 @@ function Database(dbName) {
       };
       req.onerror = req.onblocked = (err) => {
         Fail(e, reject);
+      };
+*/
+
+      for(let i = 0; i < keyPaths.length; i++) {
+        let req = store.delete(keyPaths[i]);
+      }
+      store.transaction.oncomplete = () => {
+        resolve({
+          "db": dbName,
+          "event": "delete",
+          "keys": keyPaths,
+          "timestamp": Date.now()
+        });
+      };
+      store.transaction.onerror = (err) => {
+        db.close();
+        reject(err);
       };
     });
   };
