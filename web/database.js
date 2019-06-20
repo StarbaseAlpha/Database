@@ -75,7 +75,10 @@ function Database(dbName) {
   const put = (key, value) => {
     return new Promise(async (resolve, reject) => {
       let store = await txStore('readwrite', reject);
-      let req = store.put({"key":key, "value":value});
+      let req = store.put({
+        "key": key,
+        "value": value
+      });
       req.onsuccess = (event) => {
         let e = {
           "event": "write",
@@ -107,13 +110,16 @@ function Database(dbName) {
     });
   };
 
-  const del = (keys=[]) => {
+  const del = (keys = []) => {
     return new Promise(async (resolve, reject) => {
       let store = await txStore('readwrite', reject);
 
       let keyPaths = [];
       if (!keys) {
-        return reject({"code":400,"message":"A key or an array of keys is required."});
+        return reject({
+          "code": 400,
+          "message": "A key or an array of keys is required."
+        });
       }
       if (typeof keys === 'string') {
         keyPaths = [keys];
@@ -121,37 +127,25 @@ function Database(dbName) {
         keyPaths = keys;
       }
       let ops = [];
-      keyPaths.forEach(path=>{
-        ops.push({"type":"del","key":path});
+      keyPaths.forEach(path => {
+        ops.push({
+          "type": "del",
+          "key": path
+        });
       });
 
-
-//      let req = store.delete(key);
-/*
-      req.onsuccess = (event) => {
-        let e = {
-          "event": "delete",
-          "key": key,
-          "timestamp": Date.now()
-        };
-        eventHandler(e);
-        resolve(e);
-      };
-      req.onerror = req.onblocked = (err) => {
-        Fail(e, reject);
-      };
-*/
-
-      for(let i = 0; i < keyPaths.length; i++) {
+      for (let i = 0; i < keyPaths.length; i++) {
         let req = store.delete(keyPaths[i]);
       }
       store.transaction.oncomplete = () => {
-        resolve({
+        let e = {
           "db": dbName,
           "event": "delete",
           "keys": keyPaths,
           "timestamp": Date.now()
-        });
+        };
+        eventHandler(e);
+        resolve(e);
       };
       store.transaction.onerror = (err) => {
         db.close();
@@ -162,7 +156,7 @@ function Database(dbName) {
 
   const list = (query) => {
     return new Promise(async (resolve, reject) => {
-      let store = await txStore('readwrite', reject);
+      let store = await txStore('readonly', reject);
       if (!query || typeof query !== 'object') {
         query = {};
       }
@@ -183,8 +177,7 @@ function Database(dbName) {
         if ((!limit && cursor) || (results.length < limit && cursor)) {
           let result = {};
           if (query.values) {
-            result.key = cursor.primaryKey;
-            result.value = cursor.value;
+            result = cursor.value;
           } else {
             result = cursor.primaryKey;
           }
@@ -225,13 +218,15 @@ function Database(dbName) {
     });
   };
 
-  const exportDB = () => {
-    return list({
+  const exportDB = async () => {
+    let results = await list({
       "values": true
     });
+
+    return results;
   };
 
-  const importDB = (items=[]) => {
+  const importDB = (items = []) => {
     return new Promise(async (resolve, reject) => {
       let store = await txStore('readwrite', reject);
       for (let x = 0; x < items.length; x++) {
@@ -273,3 +268,4 @@ function Database(dbName) {
   };
 
 }
+
