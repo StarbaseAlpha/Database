@@ -2,6 +2,21 @@
 
 function Database(dbName) {
 
+
+  if (!window.indexedDB) {
+    window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+  }
+
+  if (!window.IDBTransaction) {
+    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {
+      READ_WRITE: "readwrite"
+    };
+  }
+
+  if (!window.IDBKeyRange) {
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+  }
+
   if (!dbName) {
     dbName = 'test';
   }
@@ -19,11 +34,12 @@ function Database(dbName) {
     }
   };
 
-  const Fail = (err, reject) => {
-    reject({
-      "code": 400,
-      "message": err.message || err.toString() || "Error!"
-    });
+  const close = async () => {
+    if (db) {
+      db.close();
+      db = null;
+    }
+    return true;
   };
 
   const open = async () => {
@@ -33,7 +49,10 @@ function Database(dbName) {
       }
       let open = indexedDB.open(dbName, 1);
       open.onerror = (e) => {
-        Fail(e, reject);
+        reject({
+          "code": 400,
+          "message": err.message || err.toString() || "Error!"
+        });
       };
       open.onupgradeneeded = (e) => {
         db = e.target.result;
@@ -48,39 +67,19 @@ function Database(dbName) {
     });
   };
 
-  const close = async () => {
-    return new Promise((resolve, reject) => {
-      if (db) {
-        db.close();
-        db = null;
-        resolve(true);
-      } else {
-        resolve(true);
-      }
-    });
-  };
-
-  const txStore = async (method, fail) => {
-    if (!db) {
-      await open();
-    }
-    let tx = db.transaction([dbName], method);
-    tx.onerror = (e) => {
-      Fail(e, reject);
-    };
-    let store = tx.objectStore(dbName);
-    return store;
-  };
-
   const put = (key, value) => {
     return new Promise(async (resolve, reject) => {
-      let store = await txStore('readwrite', reject);
+      if (!db) {
+        await open();
+      }
+      let store = db.transaction([dbName], 'readwrite').objectStore(dbName);
       let req = store.put({
-        "key": key,
-        "value": value
+        value,
+        key
       });
-      req.onsuccess = (event) => {
+      req.onsuccess = () => {
         let e = {
+          "db": dbName,
           "event": "write",
           "key": key,
           "timestamp": Date.now()
@@ -89,31 +88,42 @@ function Database(dbName) {
         resolve(e);
       };
       req.onerror = req.onblocked = (err) => {
-        Fail(e, reject);
+        reject({
+          "code": 400,
+          "message": err.message || err.toString() || "Error!"
+        });
       };
     });
   };
 
   const get = (key) => {
     return new Promise(async (resolve, reject) => {
-      let store = await txStore('readonly', reject);
+      if (!db) {
+        await open();
+      }
+      let store = db.transaction([dbName], 'readonly').objectStore(dbName);
       let req = store.get(key);
       req.onsuccess = (e) => {
-        resolve(req.result || {
-          "key": key,
-          "value": null
+        resolve({
+          "key": req.result.key,
+          "value": req.result.value
         });
       };
       req.onerror = req.onblocked = (err) => {
-        Fail(e, reject);
+        reject({
+          "code": 400,
+          "message": err.message || err.toString() || "Error!"
+        });
       };
     });
   };
 
   const del = (keys = []) => {
     return new Promise(async (resolve, reject) => {
-      let store = await txStore('readwrite', reject);
-
+      if (!db) {
+        await open();
+      }
+      let store = db.transaction([dbName], 'readwrite').objectStore(dbName);
       let keyPaths = [];
       if (!keys) {
         return reject({
@@ -148,15 +158,20 @@ function Database(dbName) {
         resolve(e);
       };
       store.transaction.onerror = (err) => {
-        db.close();
-        reject(err);
+        reject({
+          "code": 400,
+          "message": err.message || err.toString() || "Error!"
+        });
       };
     });
   };
 
   const list = (query) => {
     return new Promise(async (resolve, reject) => {
-      let store = await txStore('readonly', reject);
+      if (!db) {
+        await open();
+      }
+      let store = db.transaction([dbName], 'readonly').objectStore(dbName);
       if (!query || typeof query !== 'object') {
         query = {};
       }
@@ -177,9 +192,12 @@ function Database(dbName) {
         if ((!limit && cursor) || (results.length < limit && cursor)) {
           let result = {};
           if (query.values) {
-            result = cursor.value;
+            result = {
+              "key": cursor.value.key,
+              "value": cursor.value.value
+            };
           } else {
-            result = cursor.primaryKey;
+            result = cursor.key;
           }
           results.push(result);
           cursor.continue();
@@ -198,9 +216,9 @@ function Database(dbName) {
 
   const deleteDB = () => {
     return new Promise(async (resolve, reject) => {
-      let closed = await close();
+      await close();
       let req = indexedDB.deleteDatabase(dbName);
-      req.onsuccess = () => {
+      req.onsuccess = function() {
         let e = {
           "db": dbName,
           "event": "deleteDB",
@@ -209,10 +227,10 @@ function Database(dbName) {
         eventHandler(e);
         resolve(e);
       };
-      req.onerror = (err) => {
+      req.onerror = req.onblocked = (e) => {
         reject({
           "code": 400,
-          "message": "Error deleting database. " + err.toString()
+          "message": "Error deleting database. " + e.toString()
         });
       };
     });
@@ -222,16 +240,15 @@ function Database(dbName) {
     let results = await list({
       "values": true
     });
-
     return results;
   };
 
   const importDB = (items = []) => {
     return new Promise(async (resolve, reject) => {
-      let store = await txStore('readwrite', reject);
-      for (let x = 0; x < items.length; x++) {
-        let req = store.put(items[x]);
+      if (!db) {
+        await open();
       }
+      let store = db.transaction([dbName], 'readwrite').objectStore(dbName);
       store.transaction.oncomplete = () => {
         let e = {
           "db": dbName,
@@ -251,6 +268,13 @@ function Database(dbName) {
         });
       };
 
+      for (let x = 0; x < items.length; x++) {
+        let req = await store.put({
+          "key": items[x].key,
+          "value": items[x].value
+        });
+      }
+
     });
 
   };
@@ -268,4 +292,3 @@ function Database(dbName) {
   };
 
 }
-
