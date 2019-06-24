@@ -104,9 +104,14 @@ function Database(dbName) {
       let store = db.transaction([dbName], 'readonly').objectStore(dbName);
       let req = store.get(key);
       req.onsuccess = (e) => {
+        let result = req.result;
+        let value = null;
+        if (result && result.value) {
+          value = result.value;
+        }
         resolve({
-          "key": req.result.key,
-          "value": req.result.value
+          "key": key,
+          "value": value
         });
       };
       req.onerror = req.onblocked = (err) => {
