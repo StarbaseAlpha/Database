@@ -19,6 +19,8 @@ async function Test() {
   console.log(list);
   let del = await db.del([key]);
   console.log(del);
+  let notfound = await db.get('nothing');
+  console.log(notfound);
   let opendb = await db.open();
   console.log(opendb);
   let closedb = await db.close();
