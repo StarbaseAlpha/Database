@@ -42,7 +42,10 @@ function Database(dbPath) {
       DB.get(key).then(result=>{
         resolve({"key":key,"value":result});
       }).catch(err=>{
-        reject({"code":404, "message":"Not Found"});
+        if (err && err.type && err.type === 'NotFoundError') {
+          return resolve({"key":key, "value":null});
+        }
+        reject({"code":err.code||400, "message":err.message||err.error||err.toString()||'Error!'});
       });
     });
   };
