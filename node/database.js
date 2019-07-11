@@ -140,17 +140,13 @@ function Database(dbPath) {
       });
       if (ops && ops.length > 0) {
         DB.batch(ops).then(()=>{
-          DB.close().then(()=>{
-            DB.open().then(()=>{
-              let e = {
-                "event": "importDB",
-                "keys": data.map(val=>{return val.key;}),
-                "timestamp": Date.now()
-              };
-              resolve(e);
-            });
-         });
-       });
+          let e = {
+            "event": "importDB",
+            "keys": data.map(val=>{return val.key;}),
+            "timestamp": Date.now()
+          };
+          resolve(e);
+        });
       } else {
         reject({"code":400,"message":"Database is empty."});
       }
