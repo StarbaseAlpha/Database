@@ -3,18 +3,20 @@
 function Database(dbName) {
 
 
-  if (!window.indexedDB) {
-    window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-  }
+  if (typeof window !== 'undefined' && typeof window === 'object') {
+    if (!window.indexedDB) {
+      window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+    }
 
-  if (!window.IDBTransaction) {
-    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {
-      READ_WRITE: "readwrite"
-    };
-  }
+    if (!window.IDBTransaction) {
+      window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {
+        READ_WRITE: "readwrite"
+      };
+    }
 
-  if (!window.IDBKeyRange) {
-    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    if (!window.IDBKeyRange) {
+      window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+    }
   }
 
   if (!dbName) {
