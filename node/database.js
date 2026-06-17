@@ -1,12 +1,10 @@
 'use strict';
 
-const levelup = require('levelup');
-const leveldown = require('leveldown');
-const encode = require('encoding-down');
+const {Level} = require('level');
 
 function Database(dbPath) {
 
-  let DB = levelup(encode(leveldown(dbPath),{"valueEncoding":"json"}));
+  let DB = new Level(dbPath, { valueEncoding: 'json' });
   let db = {};
 
   let onEvent;
@@ -80,9 +78,7 @@ function Database(dbPath) {
   };  
 
   db.list = (query={}) => {
-
-    return new Promise((resolve,reject) => {
-
+    return new Promise(async (resolve, reject) => {
       if (!query.values || query.values === 'false') {
         query.values = false;
         query.keys = true;
@@ -96,39 +92,34 @@ function Database(dbPath) {
         query.reverse = false;
       }
 
-      let stream = DB.createReadStream(query);
       let results = [];
 
-      stream.on('data', function (data) {
-
-        if (query.values) {
-          results.push({"key":data.key,"value":data.value});
-        } else {
-          results.push(data);
+      try {
+        for await (const [key, value] of DB.iterator(query)) {
+          if (query.values) {
+            results.push({"key": key, "value": value});
+          } else {
+            results.push(key);
+          }
         }
-      });
-
-      stream.on('error', function (err) {
-        return reject({"code":400,"message":"Error listing keys."});
-      });
-
-      stream.on('end', function () {
         return resolve(results);
-      });
-
+      } catch (err) {
+        return reject({"code": 400, "message": "Error listing keys."});
+      }
     });
   };
 
   db.exportDB = () => {
-    return new Promise((resolve,reject)=>{
+    return new Promise(async (resolve, reject) => {
       let payload = [];
-      DB.createReadStream().on('data',data=>{
-        payload.push(data);
-      }).on('end',()=>{
+      try {
+        for await (const [key, value] of DB.iterator()) {
+          payload.push({ key, value });
+        }
         resolve(payload);
-      }).on('error',err=>{
-        reject({"code":400,"message":err.message || err.toString() || "Unkown Error"});
-      });
+      } catch (err) {
+        reject({"code": 400, "message": err.message || err.toString() || "Unknown Error"});
+      }
     });
   };
 
@@ -154,20 +145,18 @@ function Database(dbPath) {
   };
 
   db.deleteDB = () => {
-    return new Promise((resolve,reject)=>{
-      DB.close().then(()=>{
-        leveldown.destroy(dbPath,(err)=>{
-          if (err) {
-            reject({"code":400,"message":err.message || err.toString() || "Unknown Error"});
-          } else {
-            let e = {
-              "event": "deleteDB",
-              "timestamp": Date.now()
-            };
-            resolve(e);
-          }
-        });
-      });
+    return new Promise(async (resolve, reject) => {
+      try {
+        await DB.close();
+        await Level.destroy(dbPath);
+        let e = {
+          "event": "deleteDB",
+          "timestamp": Date.now()
+        };
+        resolve(e);
+      } catch (err) {
+        reject({"code": 400, "message": err.message || err.toString() || "Unknown Error"});
+      }
     });
   };
 

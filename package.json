@@ -1,6 +1,6 @@
 {
   "name": "@starbase/database",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Starbase Database",
   "main": "index.js",
   "browser": "database.min.js",
@@ -10,9 +10,7 @@
   "author": "Mike Fuller",
   "license": "MIT",
   "dependencies": {
-    "encoding-down": "latest",
-    "leveldown": "latest",
-    "levelup": "latest"
+    "level": "latest"
   },
   "repository": {
     "type": "git",
